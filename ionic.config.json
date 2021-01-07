@@ -1,5 +1,7 @@
 {
   "name": "meeting-schedule",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }
