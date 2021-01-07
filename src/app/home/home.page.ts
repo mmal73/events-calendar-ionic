@@ -49,17 +49,17 @@ export class HomePage implements OnInit {
     // Use Angular date pipe for conversion
     let start = formatDate(event.startTime, 'medium', this.locale);
     let end = formatDate(event.endTime, 'medium', this.locale);
-
+    
     const alert = await this.alertCtrl.create({
       header: event.title,
       subHeader: event.desc,
       message: 'From: ' + start + '<br><br>To: ' + end,
-      buttons: ['OK'],
+      buttons: ['OK']
     });
     alert.present();
   }
 
-  createRandomEvents() {
+  /* createRandomEvents() {
     var events = [];
     for (var i = 0; i < 50; i += 1) {
       var date = new Date();
@@ -118,33 +118,31 @@ export class HomePage implements OnInit {
       }
     }
     this.eventSource = events;
-  }
-
-  removeEvents() {
-    this.eventSource = [];
-  }
+  } */
 
   async openCalModal() {
     const modal = await this.modalCtrl.create({
       component: CalModalPage,
       cssClass: 'cal-modal',
-      backdropDismiss: false
+      backdropDismiss: false,
+      componentProps: { 
+        selectedDate: this.selectedDate
+      }
     });
 
     await modal.present();
 
     modal.onDidDismiss().then((result) => {
       if (result.data && result.data.event) {
-        let event = result.data.event;
+        let event = {
+          allDay: result.data.event.allDay,
+          desc: result.data.event.desc,
+          endTime: new Date(result.data.event.endTime),
+          title: result.data.event.title,
+          startTime:  new Date(result.data.event.startTime)
+        };
         if (event.allDay) {
           let start = event.startTime;
-          event.startTime = new Date(
-            Date.UTC(
-              start.getUTCFullYear(),
-              start.getUTCMonth(),
-              start.getUTCDate()
-            )
-          );
           event.endTime = new Date(
             Date.UTC(
               start.getUTCFullYear(),
@@ -153,11 +151,14 @@ export class HomePage implements OnInit {
             )
           );
         }
-        this.eventSource.push(result.data.event);
+        
+        this.eventSource.push(event);
         this.myCal.loadEvents();
       }
     });
   }
-
+  onCurrentDateChanged(ev){
+    this.selectedDate  = ev;
+  }
 
 }
