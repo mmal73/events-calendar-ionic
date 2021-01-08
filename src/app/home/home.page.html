@@ -1,7 +1,7 @@
-<ion-header>
+<ion-header class="ion-no-border">
   <ion-toolbar color="primary">
     <ion-title>
-      Ionic Calendar
+      Calendario de reuniones
     </ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="openCalModal()">
@@ -14,13 +14,13 @@
 <ion-content>
   <ion-segment [(ngModel)]="calendar.mode">
     <ion-segment-button value="month">
-      <ion-label>Month</ion-label>
+      <ion-label>Mes</ion-label>
     </ion-segment-button>
     <ion-segment-button value="week">
-      <ion-label>Week</ion-label>
+      <ion-label>Semana</ion-label>
     </ion-segment-button>
     <ion-segment-button value="day">
-      <ion-label>Day</ion-label>
+      <ion-label>Día</ion-label>
     </ion-segment-button>
   </ion-segment>
 
@@ -45,13 +45,13 @@
   </ion-row>
 
   <calendar [eventSource]="eventSource" [calendarMode]="calendar.mode" [currentDate]="calendar.currentDate"
-    (onEventSelected)="onEventSelected($event)" (onTitleChanged)="onViewTitleChanged($event)" startHour="6" endHour="20"
-    step="30" startingDayWeek="1" [monthviewDisplayEventTemplate]="template"
-    (onCurrentDateChanged)="onCurrentDateChanged($event)"
+    (onEventSelected)="onEventSelected($event)" (onTitleChanged)="onViewTitleChanged($event)" [startHour]="calendar.startHour" [endHour]="calendar.endHour"
+    step="60" startingDayWeek="1" [monthviewDisplayEventTemplate]="templateMonthView"
+    (onCurrentDateChanged)="onCurrentDateChanged($event)" [locale]="locale" noEventsLabel="Sin Eventos" allDayLabel="Todo el dia" formatWeekTitle="MMMM yyyy, 'Semana' w"
     >
   </calendar>
 
-  <ng-template #template let-view="view" let-row="row" let-col="col">
+  <ng-template #templateMonthView let-view="view" let-row="row" let-col="col">
     <div [class.with-event]="view.dates[row*7+col].events.length">
       {{view.dates[row*7+col].label}}
       <div class="indicator-container">
@@ -59,6 +59,4 @@
       </div>
     </div>
   </ng-template>
-
-
 </ion-content>

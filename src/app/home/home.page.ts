@@ -3,6 +3,8 @@ import { AlertController, ModalController } from '@ionic/angular';
 import { formatDate } from '@angular/common';
 import { CalModalPage } from '../pages/cal-modal/cal-modal.page';
 import { CalendarComponent } from 'ionic2-calendar';
+import { EventsService } from '../services/events/events.service';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -10,46 +12,73 @@ import { CalendarComponent } from 'ionic2-calendar';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit {
-  eventSource = [];
-  viewTitle: string;
 
+  eventSource:any = [];
+  viewTitle: string;
   calendar = {
-    mode: 'month',
+    mode: 'month', // Change current month/week/day
     currentDate: new Date(),
+    startHour: 0,
+    endHour: 26, // TODO: in documentation the limit is 24 but here not working
   };
 
   selectedDate: Date;
 
-  @ViewChild(CalendarComponent) myCal: CalendarComponent;
+  @ViewChild( CalendarComponent ) myCal: CalendarComponent;
 
   constructor(
+    @Inject( LOCALE_ID ) private locale: string,
     private alertCtrl: AlertController,
-    @Inject(LOCALE_ID) private locale: string,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private eventsService: EventsService
   ) { }
 
-  ngOnInit() { }
+  ngOnInit(): void {
+    this.retrieveEvents();
+  }
+  // Get events to firebase
+  retrieveEvents(): void {
+    this.eventsService.getAll().snapshotChanges().pipe( // Use Angular date pipe for conversion
+      map( changes =>
+        changes.map(c =>
+          ({ key: c.payload.key, ...c.payload.val() })
+        )
+      )
+    ).subscribe( data => {
+      // Cast from IsoString to Date type
+      data.forEach( event => {
+        event.startTime = new Date( event.startTime );
+        event.endTime = new Date( event.endTime );
+      });
+      this.eventSource = data;
+    });
+  }
 
-  // Change current month/week/day
-  next() {
+  next(): void {
     this.myCal.slideNext();
   }
 
-  back() {
+  back(): void {
     this.myCal.slidePrev();
   }
 
   // Selected date reange and hence title changed
-  onViewTitleChanged(title) {
+  onViewTitleChanged( title: any ): void {
     this.viewTitle = title;
   }
 
   // Calendar event was clicked
-  async onEventSelected(event) {
-    // Use Angular date pipe for conversion
-    let start = formatDate(event.startTime, 'medium', this.locale);
-    let end = formatDate(event.endTime, 'medium', this.locale);
-    
+  async onEventSelected( event ) {
+    let start: any, end: any;
+    if(event.allDay){
+      // Use Angular date pipe for conversion
+      start = formatDate( this.addDayToDate(event.startTime), 'medium', this.locale );
+      end = formatDate( this.addDayToDate(event.endTime), 'medium', this.locale );
+    }else{
+      // Use Angular date pipe for conversion
+      start = formatDate( event.startTime, 'medium', this.locale );
+      end = formatDate( event.endTime, 'medium', this.locale );
+    }
     const alert = await this.alertCtrl.create({
       header: event.title,
       subHeader: event.desc,
@@ -58,67 +87,6 @@ export class HomePage implements OnInit {
     });
     alert.present();
   }
-
-  /* createRandomEvents() {
-    var events = [];
-    for (var i = 0; i < 50; i += 1) {
-      var date = new Date();
-      var eventType = Math.floor(Math.random() * 2);
-      var startDay = Math.floor(Math.random() * 90) - 45;
-      var endDay = Math.floor(Math.random() * 2) + startDay;
-      var startTime;
-      var endTime;
-      if (eventType === 0) {
-        startTime = new Date(
-          Date.UTC(
-            date.getUTCFullYear(),
-            date.getUTCMonth(),
-            date.getUTCDate() + startDay
-          )
-        );
-        if (endDay === startDay) {
-          endDay += 1;
-        }
-        endTime = new Date(
-          Date.UTC(
-            date.getUTCFullYear(),
-            date.getUTCMonth(),
-            date.getUTCDate() + endDay
-          )
-        );
-        events.push({
-          title: 'All Day - ' + i,
-          startTime: startTime,
-          endTime: endTime,
-          allDay: true,
-        });
-      } else {
-        var startMinute = Math.floor(Math.random() * 24 * 60);
-        var endMinute = Math.floor(Math.random() * 180) + startMinute;
-        startTime = new Date(
-          date.getFullYear(),
-          date.getMonth(),
-          date.getDate() + startDay,
-          0,
-          date.getMinutes() + startMinute
-        );
-        endTime = new Date(
-          date.getFullYear(),
-          date.getMonth(),
-          date.getDate() + endDay,
-          0,
-          date.getMinutes() + endMinute
-        );
-        events.push({
-          title: 'Event - ' + i,
-          startTime: startTime,
-          endTime: endTime,
-          allDay: false,
-        });
-      }
-    }
-    this.eventSource = events;
-  } */
 
   async openCalModal() {
     const modal = await this.modalCtrl.create({
@@ -132,33 +100,75 @@ export class HomePage implements OnInit {
 
     await modal.present();
 
-    modal.onDidDismiss().then((result) => {
-      if (result.data && result.data.event) {
-        let event = {
+    modal.onDidDismiss().then(( result ) => {
+      if ( result.data && result.data.event ) {
+        // Parse times to Date type
+        let eventAux = {
           allDay: result.data.event.allDay,
           desc: result.data.event.desc,
-          endTime: new Date(result.data.event.endTime),
+          endTime: new Date( result.data.event.endTime ),
           title: result.data.event.title,
-          startTime:  new Date(result.data.event.startTime)
+          startTime:  new Date( result.data.event.startTime )
         };
-        if (event.allDay) {
-          let start = event.startTime;
-          event.endTime = new Date(
-            Date.UTC(
-              start.getUTCFullYear(),
-              start.getUTCMonth(),
-              start.getUTCDate() + 1
-            )
-          );
+
+        // Save in firebase
+        if ( result.data.event.allDay ) {
+          const startTimeToDate = new Date( result.data.event.startTime );
+          result.data.event.startTime = this.setStartTimeToAllDay(startTimeToDate).toISOString();
+          result.data.event.endTime = this.setEndTimeToAllDay(startTimeToDate).toISOString();
+          /* result.data.event.startTime = new Date(Date.UTC(2021, 1, 2)).toISOString(); // 2 de febrero
+          result.data.event.endTime = new Date(Date.UTC(2021, 1, 3)).toISOString(); // 2 de febrero */
+        }else{
+          result.data.event.endTime = new Date( result.data.event.endTime ).toISOString();
         }
+        result.data.event.startTime = new Date( result.data.event.startTime ).toISOString();
+        this.eventsService.addEvent( result.data.event );
         
-        this.eventSource.push(event);
+        if ( eventAux.allDay ) {
+          let start = eventAux.startTime;
+          eventAux.startTime = this.setStartTimeToAllDay( start );
+          eventAux.endTime = this.setEndTimeToAllDay( start );
+          /* eventAux.startTime = new Date(Date.UTC(2021, 1, 2)); // 2 de febrero
+          eventAux.endTime = new Date(Date.UTC(2021, 1, 3)); // 2 de febrero */
+        }
+
+        // Show
+        this.eventSource.push( eventAux );
         this.myCal.loadEvents();
       }
     });
   }
-  onCurrentDateChanged(ev){
-    this.selectedDate  = ev;
+  onCurrentDateChanged( ev: Date ): void{
+    this.selectedDate = ev;
+  }
+
+  addDayToDate( start: Date): Date{
+    return new Date(
+      Date.UTC(
+        start.getUTCFullYear(),
+        start.getUTCMonth(),
+        start.getUTCDate() + 1
+        )
+    );
+  }
+  setStartTimeToAllDay( start: Date): Date{
+    return new Date(
+      Date.UTC(
+        start.getUTCFullYear(),
+        start.getUTCMonth(),
+        start.getUTCDate()
+        )
+    );
+  }
+  setEndTimeToAllDay( start: Date): Date{
+    return new Date(
+      Date.UTC(
+        start.getUTCFullYear(),
+        start.getUTCMonth(),
+        start.getUTCDate() + 1,
+        0
+        )
+    );
   }
 
 }

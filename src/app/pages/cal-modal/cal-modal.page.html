@@ -14,7 +14,7 @@
 
 <ion-content class="ion-no-padding">
   <!-- Card for adding a new event -->
-    <form #eventForm="ngForm" (ionChange)="changeForm(eventForm)">
+    <form #eventForm="ngForm" (ionChange)="setFormValid(eventForm)">
       <ion-item>
         <ion-input type="text" placeholder="Title" name='title' [(ngModel)]="event.title" required></ion-input>
       </ion-item>

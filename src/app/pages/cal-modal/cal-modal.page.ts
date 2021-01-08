@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { NgForm } from '@angular/forms';
+import MyEvent from '../../models/myEvent';
 
 @Component({
   selector: 'app-cal-modal',
@@ -8,43 +9,43 @@ import { NgForm } from '@angular/forms';
   styleUrls: ['./cal-modal.page.scss'],
 })
 export class CalModalPage implements OnInit {
+
   calendar = {
     mode: 'month',
     currentDate: new Date()
   };
-  
-  event = {
+  event: MyEvent = {
     title: '',
     desc: '',
     startTime: null,
     endTime: '',
     allDay: false
   };
-
-  selectedDate: Date;
-
+  selectedDate: Date; // Pased to modal from openCalModal method in home page
   eventFormValid = false;
 
-  constructor(private modalCtrl: ModalController) {}
+  constructor( private modalCtrl: ModalController ) {}
 
   ngOnInit() {
+    // Set selectedDate
     this.event.startTime = this.selectedDate.toISOString();
     let newEndTime = new Date( Date.UTC( this.selectedDate.getUTCFullYear(), this.selectedDate.getUTCMonth(), this.selectedDate.getUTCDate() + 1, this.selectedDate.getUTCHours() ) );
     this.event.endTime = newEndTime.toISOString();
   }
 
   save() {
-    this.modalCtrl.dismiss({ event: this.event })
+    this.modalCtrl.dismiss( { event: this.event } )
   }
 
   onTimeSelected(ev) {
-    this.event.startTime = new Date(ev.selectedTime);
+    this.event.startTime = new Date( ev.selectedTime );
   }
 
   close() {
     this.modalCtrl.dismiss();
   }
-  changeForm(eventForm: NgForm){
+  
+  setFormValid( eventForm: NgForm ){
     this.eventFormValid = eventForm.valid;
   }
 }
