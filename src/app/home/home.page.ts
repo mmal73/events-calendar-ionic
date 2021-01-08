@@ -80,6 +80,7 @@ export class HomePage implements OnInit {
       end = formatDate( event.endTime, 'medium', this.locale );
     }
     const alert = await this.alertCtrl.create({
+      cssClass: 'event-alert',
       header: event.title,
       subHeader: event.desc,
       message: 'From: ' + start + '<br><br>To: ' + end,
