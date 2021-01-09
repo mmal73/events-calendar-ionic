@@ -1,8 +1,8 @@
 {
-  "name": "meeting-schedule",
-  "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "name": "events-calendar-73",
+  "version": "1.0.0",
+  "author": "Luis Antonio Mendoza Martinez",
+  "homepage": "https://github.com/mmal73/events-calendar-73",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

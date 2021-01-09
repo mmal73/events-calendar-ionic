@@ -16,23 +16,23 @@
   <!-- Card for adding a new event -->
     <form #eventForm="ngForm" (ionChange)="setFormValid(eventForm)">
       <ion-item>
-        <ion-input type="text" placeholder="Title" name='title' [(ngModel)]="event.title" required></ion-input>
+        <ion-input type="text" placeholder="Titulo" name='title' [(ngModel)]="event.title" required></ion-input>
       </ion-item>
       <ion-item>
-        <ion-input type="text" placeholder="Description" name='desc' [(ngModel)]="event.desc" required></ion-input>
+        <ion-input type="text" placeholder="Descripción" name='desc' [(ngModel)]="event.desc" required></ion-input>
       </ion-item>
       <ion-item>
-        <ion-label>Start</ion-label>
+        <ion-label>Inicia</ion-label>
         <ion-datetime displayFormat="MM/DD/YYYY HH:mm" pickerFormat="MMM D:HH:mm" name='startTime' [(ngModel)]="event.startTime" required
           [min]="minDate"></ion-datetime>
       </ion-item>
       <ion-item>
-        <ion-label>End</ion-label>
+        <ion-label>Termina</ion-label>
         <ion-datetime displayFormat="MM/DD/YYYY HH:mm" pickerFormat="MMM D:HH:mm" name='endTime' [(ngModel)]="event.endTime" [disabled]="event.allDay" [required]="!event.allDay"
           [min]="minDate"></ion-datetime>
       </ion-item>
       <ion-item>
-        <ion-label>All Day?</ion-label>
+        <ion-label>Todo el día?</ion-label>
         <ion-checkbox name='allDay' [(ngModel)]="event.allDay"></ion-checkbox>
       </ion-item>
     </form>
