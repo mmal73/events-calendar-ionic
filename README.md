@@ -51,35 +51,33 @@ To get a local copy up and running follow these simple steps.
 ## Usage
 
 
-
 **Home:**
 
-[![Product Home View][start]]()
+<img src="screenshots/start.jpg" width="20%">.
 
 **Add Event:**
 
-[![Product Add Event][Add Event]]()
+<img src="screenshots/add-event.jpg" width="20%">.
 
 **Show Events:**
 
-[![Product Home View][Show All Events]]()
+<img src="screenshots/show-all-events.jpg" width="20%">.
 
 **Select an Event:**
 
-[![Product Home View][Event Selected]]()
+<img src="screenshots/event-selected.jpg" width="20%">.
 
 **Week View:**
 
-[![Product Home View][Week View]]()
+<img src="screenshots/week-view.jpg" width="20%">.
 
 **Day View:**
 
-[![Product Home View][Day View]]()
+<img src="screenshots/day-view.jpg" width="20%">.
 
 **Event Detail:**
 
-[![Product Home View][Alert With Event]]()
-
+<img src="screenshots/alert-with-event.jpg" width="20%">.
 
 <!-- LICENSE -->
 ## License
@@ -87,17 +85,12 @@ To get a local copy up and running follow these simple steps.
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
-
-<!-- MARKDOWN LINKS & IMAGES -->
+<!-- ACKNOWLEDGEMENTS -->
+## Acknowledgements
+* [Img Shields](https://shields.io)
+<!-- MARKDOWN LINKS -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [license-shield]: https://img.shields.io/github/license/github_username/repo.svg?style=for-the-badge
-[license-url]: https://**github**.com/github_username/repo/blob/master/LICENSE.txt
+[license-url]: https://github.com/mmal73/meeting-planner-73/blob/main/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedincolorB=555
-[linkedin-url]: https://linkedin.com/in/github_username
-[start]: /screenshots/start.jpg
-[Add Event]: /screenshots/add-event.jpg
-[Show All Events]: /screenshots/show-all-events.jpg
-[Event Selected]: /screenshots/event-selected.jpg
-[Week View]: /screenshots/week-view.jpg
-[Day View]: /screenshots/day-view.jpg
-[Alert With Event]: /screenshots/alert-with-event.jpg
+[linkedin-url]: https://www.linkedin.com/in/luis-antonio-mendoza-martinez-375895200/
